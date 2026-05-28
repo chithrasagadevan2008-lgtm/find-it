@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Item</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h1>Add Lost/Found Item</h1>
+
+<form id="itemForm">
+    <input type="text" placeholder="Item Name" required><br><br>
+    
+    <textarea placeholder="Description"></textarea><br><br>
+    
+    <input type="text" placeholder="Location"><br><br>
+    
+    <button type="submit">Submit</button>
+</form>
+
+<a href="index.html">⬅ Back to Home</a>
+
+<!-- ✅ ONLY ONE SCRIPT -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<script>
+// ✅ ONE client only
+const client = supabase.createClient(
+  "https://bvssxqxlxdovuhuwhbjo.supabase.co",
+  "sb_publishable_38DUO2H3YqBALN5dteCToA_EU9CLgWt"
+);
+
+// ✅ Wait until page loads
+document.getElementById("itemForm").addEventListener("submit", async function(e){
+    e.preventDefault();
+
+    const name = document.querySelectorAll("input[type=text]")[0].value;
+    const location = document.querySelectorAll("input[type=text]")[1].value;
+    const description = document.querySelector("textarea").value;
+
+    const { error } = await client
+        .from('items')
+        .insert([
+            { name, description, location }
+        ]);
+
+    if (error) {
+        alert("Error ❌");
+        console.log(error);
+    } else {
+        alert("Item Added Successfully ✅");
+        document.getElementById("itemForm").reset();
+    }
+});
+</script>
+
+</body>
+</html>

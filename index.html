@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FindIt — College Lost & Found Portal</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <!-- ========== LOGIN PAGE ========== -->
+  <div id="loginPage" class="page active">
+    <div class="login-bg">
+      <div class="login-blob b1"></div>
+      <div class="login-blob b2"></div>
+    </div>
+    <div class="login-card">
+      <div class="login-logo">
+        <span class="logo-dot"></span>Find<span class="yellow">It</span>
+      </div>
+      <p class="login-tagline">Your College Lost &amp; Found Portal</p>
+
+      <!-- Role Selector -->
+      <div class="role-toggle">
+        <button class="role-btn active" id="roleStudent" onclick="selectRole('student')">🎓 Student</button>
+        <button class="role-btn" id="roleFaculty" onclick="selectRole('faculty')">👨‍🏫 Faculty</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">College Email</label>
+        <input class="form-input" id="loginEmail" type="email" placeholder="you@college.edu" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" id="loginPassword" type="password" placeholder="Enter password" />
+      </div>
+      <div class="form-group" id="nameGroup" style="display:none">
+        <label class="form-label">Full Name</label>
+        <input class="form-input" id="loginName" type="text" placeholder="Your full name" />
+      </div>
+      <div class="form-group" id="deptGroup" style="display:none">
+        <label class="form-label">Department / Roll No</label>
+        <input class="form-input" id="loginDept" type="text" placeholder="e.g. CSE / 22CS001" />
+      </div>
+
+      <div class="login-tabs">
+        <button class="tab-btn active" id="tabSignin" onclick="switchTab('signin')">Sign In</button>
+        <button class="tab-btn" id="tabSignup" onclick="switchTab('signup')">Sign Up</button>
+      </div>
+
+      <button class="btn btn-primary full" id="loginBtn" onclick="handleLogin()">Sign In →</button>
+      <p class="login-note">🔒 Your contact details are never shown publicly.</p>
+    </div>
+  </div>
+
+  <!-- ========== MAIN APP ========== -->
+  <div id="appPage" class="page">
+
+    <!-- NAV -->
+    <nav class="navbar">
+      <div class="nav-logo">
+        <span class="logo-dot"></span>Find<span class="yellow">It</span>
+      </div>
+      <div class="nav-links">
+        <button class="nav-link active" id="navHome" onclick="showSection('home')">🏠 Home</button>
+        <button class="nav-link" id="navLost" onclick="showSection('lost')">🔍 Lost Items</button>
+        <button class="nav-link" id="navFound" onclick="showSection('found')">📦 Found Items</button>
+        <button class="nav-link" id="navMy" onclick="showSection('my')">📋 My Posts</button>
+      </div>
+      <div class="nav-right">
+        <div class="nav-user" id="navUser"></div>
+        <button class="btn btn-ghost sm" onclick="logout()">Logout</button>
+      </div>
+    </nav>
+
+    <!-- ========== HOME SECTION ========== -->
+    <section id="secHome" class="section active">
+      <div class="hero">
+        <div class="hero-text">
+          <div class="hero-chip">🎓 College Portal</div>
+          <h1 class="hero-title">Lost something?<br/><span class="yellow">Find it here.</span></h1>
+          <p class="hero-desc">Report lost items or help others by posting what you've found. All contact details are kept private and secure.</p>
+          <div class="hero-actions">
+            <button class="btn btn-lost" onclick="showSection('lost'); openPostModal('lost')">🔍 Report Lost Item</button>
+            <button class="btn btn-found" onclick="showSection('found'); openPostModal('found')">📦 Post Found Item</button>
+          </div>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-card">
+            <div class="stat-num" id="statTotal">0</div>
+            <div class="stat-label">Total Posts</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num yellow" id="statLost">0</div>
+            <div class="stat-label">Lost Items</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num green" id="statFound">0</div>
+            <div class="stat-label">Found Items</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num accent2" id="statClaimed">0</div>
+            <div class="stat-label">Claimed ✓</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Posts Preview -->
+      <div class="section-inner">
+        <div class="section-header">
+          <h2 class="section-title">Recent Activity</h2>
+        </div>
+        <div class="items-grid" id="homeGrid"></div>
+      </div>
+    </section>
+
+    <!-- ========== LOST SECTION ========== -->
+    <section id="secLost" class="section">
+      <div class="section-inner">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">🔍 Lost Items</h2>
+            <p class="section-sub">Items reported as lost by students and faculty</p>
+          </div>
+          <button class="btn btn-lost" onclick="openPostModal('lost')">+ Report Lost Item</button>
+        </div>
+        <div class="search-bar">
+          <input class="search-input" type="text" placeholder="Search lost items..." oninput="renderLost()" id="searchLost"/>
+          <select class="filter-sel" onchange="renderLost()" id="filterLostCat">
+            <option value="">All Categories</option>
+            <option>Electronics</option><option>Bags</option><option>ID & Cards</option>
+            <option>Keys</option><option>Clothing</option><option>Books</option><option>Other</option>
+          </select>
+        </div>
+        <div class="items-grid" id="lostGrid"></div>
+      </div>
+    </section>
+
+    <!-- ========== FOUND SECTION ========== -->
+    <section id="secFound" class="section">
+      <div class="section-inner">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">📦 Found Items</h2>
+            <p class="section-sub">Items found and posted by students and faculty</p>
+          </div>
+          <button class="btn btn-found" onclick="openPostModal('found')">+ Post Found Item</button>
+        </div>
+        <div class="search-bar">
+          <input class="search-input" type="text" placeholder="Search found items..." oninput="renderFound()" id="searchFound"/>
+          <select class="filter-sel" onchange="renderFound()" id="filterFoundCat">
+            <option value="">All Categories</option>
+            <option>Electronics</option><option>Bags</option><option>ID & Cards</option>
+            <option>Keys</option><option>Clothing</option><option>Books</option><option>Other</option>
+          </select>
+        </div>
+        <div class="items-grid" id="foundGrid"></div>
+      </div>
+    </section>
+
+    <!-- ========== MY POSTS SECTION ========== -->
+    <section id="secMy" class="section">
+      <div class="section-inner">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">📋 My Posts</h2>
+            <p class="section-sub">Items you've reported or posted</p>
+          </div>
+        </div>
+        <div class="items-grid" id="myGrid"></div>
+      </div>
+    </section>
+
+  </div><!-- end appPage -->
+
+  <!-- ========== POST MODAL ========== -->
+  <div class="overlay" id="postOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="postModalTitle">Report Item</h3>
+        <button class="close-btn" onclick="closeModal('postOverlay')">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Item Name *</label>
+        <input class="form-input" id="pName" type="text" placeholder="e.g. Blue Backpack, Student ID Card"/>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Category *</label>
+          <select class="form-input" id="pCat">
+            <option value="">Select...</option>
+            <option>Electronics</option><option>Bags</option><option>ID & Cards</option>
+            <option>Keys</option><option>Clothing</option><option>Books</option><option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Location *</label>
+          <select class="form-input" id="pLoc">
+            <option value="">Select...</option>
+            <option>Library</option><option>Cafeteria</option><option>Lab Block</option>
+            <option>Hostel</option><option>Parking</option><option>Sports Complex</option>
+            <option>Admin Block</option><option>Classroom</option><option>Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Description *</label>
+        <textarea class="form-input" id="pDesc" rows="3" placeholder="Describe the item — color, brand, size, any identifying marks..."></textarea>
+      </div>
+
+      <!-- Image Upload -->
+      <div class="form-group">
+        <label class="form-label">Upload Image</label>
+        <div class="img-upload-area" id="imgUploadArea" onclick="document.getElementById('imgFileInput').click()">
+          <div class="img-upload-icon">📷</div>
+          <div class="img-upload-text">Click to upload image</div>
+          <div class="img-upload-sub">JPG, PNG, WEBP up to 5MB</div>
+          <img id="imgPreview" class="img-preview" src="" alt="preview" style="display:none"/>
+        </div>
+        <input type="file" id="imgFileInput" accept="image/*" style="display:none" onchange="handleImageUpload(event)"/>
+      </div>
+
+      <!-- Contact (only shown to claimer, never public) -->
+      <div class="privacy-note">
+        🔒 <strong>Privacy:</strong> Your email and phone are never shown publicly. Only shared privately when someone claims the item and you approve.
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Your Phone (private)</label>
+          <input class="form-input" id="pPhone" type="tel" placeholder="10-digit number"/>
+        </div>
+        <div class="form-group" id="foundDateGroup">
+          <label class="form-label">Date Found / Lost</label>
+          <input class="form-input" id="pDate" type="date"/>
+        </div>
+      </div>
+
+      <button class="btn btn-primary full" onclick="submitPost()">Submit Post</button>
+    </div>
+  </div>
+
+  <!-- ========== DETAIL MODAL ========== -->
+  <div class="overlay" id="detailOverlay">
+    <div class="modal" id="detailModalContent"></div>
+  </div>
+
+  <!-- ========== CONTACT MODAL (private) ========== -->
+  <div class="overlay" id="contactOverlay">
+    <div class="modal small">
+      <div class="modal-header">
+        <h3 class="modal-title">🔒 Private Contact Info</h3>
+        <button class="close-btn" onclick="closeModal('contactOverlay')">✕</button>
+      </div>
+      <div id="contactInfo"></div>
+      <p class="privacy-note" style="margin-top:1rem">This info is only visible to you. Please coordinate respectfully to retrieve the item.</p>
+      <button class="btn btn-primary full" style="margin-top:1rem" onclick="closeModal('contactOverlay')">Got it</button>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script src="api.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
