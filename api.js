@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://findit-backend-qh3s.onrender.com/api';
 
 // ---------- AUTH ----------
 async function apiRegister(name, email, password, collegeId, phone) {
