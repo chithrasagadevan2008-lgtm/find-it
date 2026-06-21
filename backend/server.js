@@ -7,43 +7,39 @@ dotenv.config();
 
 const app = express();
 
-
-// MIDDLEWARE
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-
-// ROUTES
+// Routes
 const authRoutes = require('./routes/auth');
 const itemRoutes = require('./routes/items');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/items', itemRoutes);
 
-
-// TEST ROUTE
+// Test Route
 app.get('/', (req, res) => {
-    res.send('Lost and Found API Running...');
+  res.send('Lost and Found API Running...');
 });
 
+// MongoDB Connection + Server Start
+async function startServer() {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
 
-// DATABASE CONNECTION
-mongoose.connect(process.env.MONGO_URI)
-
-.then(() => {
-
-    console.log('✅ MongoDB Connected Successfully');
+    console.log('✅ MongoDB Connected');
 
     const PORT = process.env.PORT || 5000;
 
     app.listen(PORT, () => {
-        console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`🚀 Server running on port ${PORT}`);
     });
 
-})
+  } catch (error) {
+    console.error('❌ MongoDB Connection Error:', error.message);
+    process.exit(1);
+  }
+}
 
-.catch((error) => {
-
-    console.log('❌ MongoDB Connection Error:', error);
-
-});
+startServer();
